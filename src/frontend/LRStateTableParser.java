@@ -37,6 +37,10 @@ public class LRStateTableParser {
     	return typeSystem;
     }
     
+    public Stack<Object> getValueStack() {
+    	return valueStack;
+    }
+    
     public int getCurrentLevel() {
     	return nestingLevel;
     }
@@ -155,6 +159,19 @@ public class LRStateTableParser {
     	case CGrammarInitializer.Start_VarDecl_TO_VarDecl:
     		typeSystem.addDeclarator((Symbol)attributeForParentNode, Declarator.POINTER);
     		break;
+    		
+    	case CGrammarInitializer.VarDecl_LB_ConstExpr_RB_TO_VarDecl:
+    		//数组定义
+    		Declarator declarator = typeSystem.addDeclarator((Symbol)valueStack.get(valueStack.size() - 4), Declarator.ARRAY);
+    		int arrayNum = (Integer)attributeForParentNode;
+    		declarator.setElementNum(arrayNum);
+    		attributeForParentNode = valueStack.get(valueStack.size() - 4);
+    		break;
+    		
+    	case CGrammarInitializer.Name_TO_Unary:
+    		attributeForParentNode = typeSystem.getSymbolByText(text, nestingLevel);
+    		break;
+    		
     	case CGrammarInitializer.ExtDeclList_COMMA_ExtDecl_TO_ExtDeclList:
     	case CGrammarInitializer.VarList_COMMA_ParamDeclaration_TO_VarList:
     	case CGrammarInitializer.DeclList_Comma_Decl_TO_DeclList:
@@ -220,6 +237,7 @@ public class LRStateTableParser {
     		doEnum();
     		break;
     	case CGrammarInitializer.Number_TO_ConstExpr:
+    	case CGrammarInitializer.Number_TO_Unary:
     		attributeForParentNode = Integer.valueOf(text);
     		break;
     	}

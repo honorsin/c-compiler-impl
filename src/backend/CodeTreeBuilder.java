@@ -5,8 +5,8 @@ import java.util.Stack;
 
 import frontend.CGrammarInitializer;
 import frontend.CTokenType;
+import frontend.Declarator;
 import frontend.LRStateTableParser;
-
 import frontend.Symbol;
 import frontend.TypeSystem;
 
@@ -14,6 +14,7 @@ public class CodeTreeBuilder {
     private Stack<ICodeNode> codeNodeStack = new Stack<ICodeNode>();
     private LRStateTableParser parser = null;
     private TypeSystem typeSystem = null;
+    private Stack<Object> valueStack = null;
     
     private static CodeTreeBuilder treeBuilder = null;
     public static CodeTreeBuilder getCodeTreeBuilder() {
@@ -23,9 +24,11 @@ public class CodeTreeBuilder {
     	
     	return treeBuilder;
     }
+    
     public void setParser(LRStateTableParser parser) {
     	this.parser = parser;
     	typeSystem = parser.getTypeSystem();
+    	valueStack = parser.getValueStack();
     }
     
     public ICodeNode buildCodeTree(int production, String text) {
@@ -38,27 +41,35 @@ public class CodeTreeBuilder {
     	case CGrammarInitializer.String_TO_Unary:
     		node = ICodeFactory.createICodeNode(CTokenType.UNARY);
     		if (production == CGrammarInitializer.Name_TO_Unary) {
-    			symbol = getSymbolByText(text);
+    			symbol = typeSystem.getSymbolByText(text, parser.getCurrentLevel());
     			node.setAttribute(ICodeKey.SYMBOL, symbol);
     		} 
     		
     		node.setAttribute(ICodeKey.TEXT, text);
     		break;
     		
+    		case CGrammarInitializer.Unary_LB_Expr_RB_TO_Unary:
+    			//访问或更改数组元素
+    			node = ICodeFactory.createICodeNode(CTokenType.UNARY);
+    			node.addChild(codeNodeStack.pop());  //EXPR
+    			node.addChild(codeNodeStack.pop());  //UNARY
+    			
+    		break;
+    		
     	case CGrammarInitializer.Uanry_TO_Binary:
     		node = ICodeFactory.createICodeNode(CTokenType.BINARY);
     		ICodeNode child = codeNodeStack.pop();
-    		String t = (String)child.getAttribute(ICodeKey.TEXT);
-    		node.setAttribute(ICodeKey.TEXT, child.getAttribute(ICodeKey.TEXT));
-    		Symbol sym = (Symbol)child.getAttribute(ICodeKey.SYMBOL);
+    		node.setAttribute(ICodeKey.TEXT, child.getAttribute(ICodeKey.TEXT));		
     		node.addChild(child);
     		break;
+    		
+        
     		
     	case CGrammarInitializer.Binary_TO_NoCommaExpr:
     	case CGrammarInitializer.NoCommaExpr_Equal_NoCommaExpr_TO_NoCommaExpr:
     		node = ICodeFactory.createICodeNode(CTokenType.NO_COMMA_EXPR);
     		child = codeNodeStack.pop();
-    		t = (String)child.getAttribute(ICodeKey.TEXT);
+    		String t = (String)child.getAttribute(ICodeKey.TEXT);
     		node.addChild(child);
     		if (production == CGrammarInitializer.NoCommaExpr_Equal_NoCommaExpr_TO_NoCommaExpr) {
     			child = codeNodeStack.pop();
@@ -101,6 +112,8 @@ public class CodeTreeBuilder {
     		node.addChild(codeNodeStack.pop());
     		node.addChild(codeNodeStack.pop());
     		break;
+    		
+        
     	}
     	
     	
@@ -115,18 +128,7 @@ public class CodeTreeBuilder {
     
     
     
-    private Symbol getSymbolByText(String text) {
-    	ArrayList<Symbol> symbolList = typeSystem.getSymbol(text);
-    	int i = 0;
-    	int level = parser.getCurrentLevel();
-    	while (i < symbolList.size()) {
-    		if (symbolList.get(i).getLevel() == level) {
-    			return symbolList.get(i);
-    		}
-    	}
-    	
-    	return null;
-    }
+    
     
     public ICodeNode getCodeTreeRoot() {
     	return codeNodeStack.pop();

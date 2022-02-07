@@ -23,6 +23,7 @@ public class TypeLink {
     	return next;
     }
     
+    
     public void setNextLink(TypeLink obj) {
     	this.next = obj;
     }

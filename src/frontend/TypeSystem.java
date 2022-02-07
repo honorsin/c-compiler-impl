@@ -165,10 +165,12 @@ public class TypeSystem {
     	return new Symbol(name, level);
     }
     
-    public void addDeclarator(Symbol symbol, int declaratorType) {
+    public Declarator addDeclarator(Symbol symbol, int declaratorType) {
     	Declarator declarator = new Declarator(declaratorType);
     	TypeLink link = new TypeLink(true, false, declarator);
     	symbol.addDeclarator(link);
+    	
+    	return declarator;
     }
     
     public void addSpecifierToDeclaration(TypeLink specifier, Symbol symbol) {
@@ -178,6 +180,17 @@ public class TypeSystem {
     	}
     }
     
-   
+    public Symbol getSymbolByText(String text, int level) {
+    	ArrayList<Symbol> symbolList = typeSystem.getSymbol(text);
+    	int i = 0;
+    	
+    	while (i < symbolList.size()) {
+    		if (symbolList.get(i).getLevel() == level) {
+    			return symbolList.get(i);
+    		}
+    	}
+    	
+    	return null;
+    }
     
 }

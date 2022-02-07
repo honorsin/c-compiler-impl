@@ -1,6 +1,8 @@
 package frontend;
 
-public class Symbol {
+import backend.IValueSetter;
+
+public class Symbol implements IValueSetter{
     String  name;
     String  rname;
     
@@ -26,7 +28,9 @@ public class Symbol {
     	return name;
     }
     
+    @Override
     public void setValue(Object obj) {
+    	System.out.println("Assign Value of " + obj.toString() + " to Variable " + name);
     	this.value = obj;
     }
     
@@ -42,6 +46,22 @@ public class Symbol {
     		type.setNextLink(typeLinkBegin);
     		typeLinkBegin = type;
     	}
+    }
+    
+    public Declarator getDeclarator(int type) {
+        TypeLink begin = typeLinkBegin;
+        while (begin != null && begin.getTypeObject() != null) {
+        	if (begin.isDeclarator) {
+        		Declarator declarator = (Declarator)begin.getTypeObject();
+        		if (declarator.getType() == type) {
+        			return declarator;
+        		}
+        	}
+        	
+        	begin = begin.toNext();
+        }
+        
+        return null;
     }
     
     public TypeLink getTypeHead() {

@@ -50,6 +50,12 @@ public class CGrammarInitializer {
 	//STATEMENT -> LOCAL_DEFS(68)
 	public static final  int LocalDefs_TO_Statement = 68;
 	
+	//VAR_DECL -> VAR_DECL LB CONST_EXPR RB  a[5] (109)
+	public static final int VarDecl_LB_ConstExpr_RB_TO_VarDecl = 109;
+	
+	//UNARY -> UNARY LB EXPR RB (110)
+	public static final int Unary_LB_Expr_RB_TO_Unary = 101;
+	
 	private int productionNum = 0;
 	
 	private static CGrammarInitializer instance = null;
@@ -949,6 +955,14 @@ public class CGrammarInitializer {
     	production = new Production(productionNum,CTokenType.TARGET.ordinal(),0, right);
     	productionNum++;
     	addProduction(production, false);
+    	
+    	//VAR_DECL -> VAR_DECL LB CONST_EXPR RB  a[5] (109)
+    	right = getProductionRight( new int[]{CTokenType.VAR_DECL.ordinal(), CTokenType.LB.ordinal(), CTokenType.CONST_EXPR.ordinal(),
+    			CTokenType.RB.ordinal()});
+    	production = new Production(productionNum,CTokenType.VAR_DECL.ordinal(),0, right);
+    	productionNum++;
+    	addProduction(production, false);
+    	
     }
     
     private void addProduction(Production production,boolean nullable) {

@@ -13,7 +13,6 @@ public class NoCommaExprExecutor extends BaseExecutor{
     	executeChildren(root);
     	
     	int production = (int)root.getAttribute(ICodeKey.PRODUCTION);
-    	Symbol symbol;
     	Object value;
     	ICodeNode child;
     	switch (production) {
@@ -24,15 +23,23 @@ public class NoCommaExprExecutor extends BaseExecutor{
     		
     	case CGrammarInitializer.NoCommaExpr_Equal_NoCommaExpr_TO_NoCommaExpr:
     		child = root.getChildren().get(0);
-    		String text = (String)child.getAttribute(ICodeKey.TEXT);
-    		symbol = (Symbol)child.getAttribute(ICodeKey.SYMBOL);
+    		String t = (String)child.getAttribute(ICodeKey.TEXT);
+    		IValueSetter setter;
+    		setter = (IValueSetter)child.getAttribute(ICodeKey.SYMBOL);
     		child = root.getChildren().get(1);
     		value = child.getAttribute(ICodeKey.VALUE);
-    		symbol.setValue(value);
+    		
+    		try {
+				setter.setValue(value);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				System.err.println("Runtime Error: Assign Value Error");
+			}
+    		
     		child = root.getChildren().get(0);
     		child.setAttribute(ICodeKey.VALUE, value);
     		copyChild(root, root.getChildren().get(0));
-			System.out.println("Variable " + (String)root.getAttribute(ICodeKey.TEXT) + " is assigned to value of " + value.toString());
 			
     		break;
     	}
