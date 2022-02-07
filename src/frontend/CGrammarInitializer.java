@@ -56,6 +56,15 @@ public class CGrammarInitializer {
 	//UNARY -> UNARY LB EXPR RB (110)
 	public static final int Unary_LB_Expr_RB_TO_Unary = 101;
 	
+	//TEST -> EXPR 76
+	public static final int Expr_TO_Test= 76;
+	//IF_STATEMENT -> IF LP TEST RP STATEMENT (72)
+	public static final int If_Test_Statement_TO_IFStatement = 72;
+	//BINARY -> BINARY RELOP BINARY (65)
+	public static final int Binary_RelOP_Binary_TO_Binray = 65;
+	//IF_ELSE_STATEMENT ->IF_ELSE_STATEMENT ELSE STATEMENT 74
+	public static final int IfElseStatemnt_Else_Statemenet_TO_IfElseStatement = 74;
+	
 	private int productionNum = 0;
 	
 	private static CGrammarInitializer instance = null;

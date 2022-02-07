@@ -143,9 +143,11 @@ public class Lexer {
     		    	case '<':
     		    		if (current.charAt(i + 1) == '=') {
     		    			current = current.substring(2);
+    		    			yytext = current;
     		    		} else if ((current.charAt(i) == '<' && current.charAt(i+1) == '<')
     		    				|| (current.charAt(i) == '>' && current.charAt(i+1) == '>')) {
     		    			current = current.substring(2);
+    		    			yytext = current;
     		    			return CTokenType.SHIFTOP.ordinal();
     		    		}
     		    		else {

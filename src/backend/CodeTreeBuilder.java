@@ -41,7 +41,7 @@ public class CodeTreeBuilder {
     	case CGrammarInitializer.String_TO_Unary:
     		node = ICodeFactory.createICodeNode(CTokenType.UNARY);
     		if (production == CGrammarInitializer.Name_TO_Unary) {
-    			symbol = typeSystem.getSymbolByText(text, parser.getCurrentLevel());
+    			symbol =typeSystem.getSymbolByText(text, parser.getCurrentLevel());
     			node.setAttribute(ICodeKey.SYMBOL, symbol);
     		} 
     		
@@ -80,10 +80,21 @@ public class CodeTreeBuilder {
     		
     	case CGrammarInitializer.Binary_Plus_Binary_TO_Binary:
     		node = ICodeFactory.createICodeNode(CTokenType.BINARY);
-
     		node.addChild(codeNodeStack.pop());
     		node.addChild(codeNodeStack.pop());
     		break;
+    		
+       case CGrammarInitializer.Binary_RelOP_Binary_TO_Binray:
+    	   node = ICodeFactory.createICodeNode(CTokenType.BINARY);
+   		   node.addChild(codeNodeStack.pop());
+   		   
+   		   ICodeNode operator = ICodeFactory.createICodeNode(CTokenType.RELOP);
+   		   operator.setAttribute(ICodeKey.TEXT, parser.getRelOperatorText());
+   		   node.addChild(operator);
+   		   
+   		   node.addChild(codeNodeStack.pop());
+    	
+   		   break;
     		
     	case CGrammarInitializer.NoCommaExpr_TO_Expr:
     		node = ICodeFactory.createICodeNode(CTokenType.EXPR);
@@ -112,8 +123,23 @@ public class CodeTreeBuilder {
     		node.addChild(codeNodeStack.pop());
     		node.addChild(codeNodeStack.pop());
     		break;
+ 
+    	case CGrammarInitializer.Expr_TO_Test:
+    		node = ICodeFactory.createICodeNode(CTokenType.TEST);
+    		node.addChild(codeNodeStack.pop());
+    		break;
     		
-        
+    	case CGrammarInitializer.If_Test_Statement_TO_IFStatement:
+    		node = ICodeFactory.createICodeNode(CTokenType.IF_STATEMENT);
+    		node.addChild(codeNodeStack.pop()); //Test
+    		node.addChild(codeNodeStack.pop()); //Statement
+    		break;
+    		
+    	case CGrammarInitializer.IfElseStatemnt_Else_Statemenet_TO_IfElseStatement:
+    		node = ICodeFactory.createICodeNode(CTokenType.IF_ELSE_STATEMENT);
+    		node.addChild(codeNodeStack.pop()); //IfStatement
+    		node.addChild(codeNodeStack.pop()); // statement
+    		break;
     	}
     	
     	

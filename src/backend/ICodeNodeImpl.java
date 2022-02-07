@@ -74,7 +74,20 @@ public class ICodeNodeImpl extends HashMap<ICodeKey, Object> implements ICodeNod
     
 	@Override
 	public String toString() {
-		return type.toString();
+		String info = "";
+		if (get(ICodeKey.VALUE) != null) {
+			info += "Node Value is " + get(ICodeKey.VALUE).toString();
+		}
+		
+		if (get(ICodeKey.TEXT) != null) {
+			info += "\nNode Text is " + get(ICodeKey.TEXT).toString();
+		}
+		
+		if (get(ICodeKey.SYMBOL) != null) {
+			info += "\nNode Symbol is " + get(ICodeKey.SYMBOL).toString();
+		}
+		
+		return info  + "\n Node Type is " + type.toString();
 	}
    
 }

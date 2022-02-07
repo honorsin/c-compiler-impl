@@ -45,6 +45,11 @@ public class LRStateTableParser {
     	return nestingLevel;
     }
     
+    private String relOperatorText;
+    public String getRelOperatorText() {
+    	return relOperatorText;
+    }
+    
     private void showCurrentStateInfo(int stateNum) {
     	System.out.println("current input is :" + CTokenType.getSymbolStr(lexerInput));
     	
@@ -72,7 +77,9 @@ public class LRStateTableParser {
         		//shift 操作
                 statusStack.push(action);
     			text = lexer.yytext;
-    			
+    			if (lexerInput == CTokenType.RELOP.ordinal()) {
+    				relOperatorText = text;
+    			}
     			parseStack.push(lexerInput);
     			
     			if (CTokenType.isTerminal(lexerInput)) {

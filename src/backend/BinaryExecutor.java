@@ -26,6 +26,35 @@ public class BinaryExecutor extends BaseExecutor{
     		System.out.println("sum of " + root.getChildren().get(0).getAttribute(ICodeKey.TEXT) + " and "
     				+ root.getChildren().get(1).getAttribute(ICodeKey.TEXT) + "is " + (val1+val2) );
     		break;
+    		
+    	case CGrammarInitializer.Binary_RelOP_Binary_TO_Binray:
+    		 val1 = (Integer)root.getChildren().get(0).getAttribute(ICodeKey.VALUE);
+    		 String operator = (String)root.getChildren().get(1).getAttribute(ICodeKey.TEXT);
+    		 val2 = (Integer)root.getChildren().get(2).getAttribute(ICodeKey.VALUE);
+    		 
+    		 switch (operator) {
+    		 case "==":
+    			 root.setAttribute(ICodeKey.VALUE, val1 == val2 ? 1 : 0);
+    			 break;
+    		 case "<":
+    			 root.setAttribute(ICodeKey.VALUE, val1 < val2? 1 : 0);
+    			 break;
+    		 case "<=":
+    			 root.setAttribute(ICodeKey.VALUE, val1 <= val2? 1 : 0);
+    			 break;
+    		 case ">":
+    			 root.setAttribute(ICodeKey.VALUE, val1 > val2? 1 : 0);
+    			 break;
+    		 case ">=":
+    			 root.setAttribute(ICodeKey.VALUE, val1 >= val2? 1 : 0);
+    			 break;
+    			 
+    		 case "!=":
+    			 root.setAttribute(ICodeKey.VALUE, val1 != val2? 1 : 0);
+    			 break;
+    		 }
+    		 
+    		 break;
     	}
     	
     	return root;
