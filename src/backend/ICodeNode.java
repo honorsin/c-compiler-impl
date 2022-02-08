@@ -15,5 +15,9 @@ public interface ICodeNode {
     public Object  getAttribute(ICodeKey key);
     
     public ICodeNode copy();
+    
+    public boolean isChildrenReverse();
+    
+    public void reverseChildren();
 }
 

@@ -64,6 +64,29 @@ public class CGrammarInitializer {
 	public static final int Binary_RelOP_Binary_TO_Binray = 65;
 	//IF_ELSE_STATEMENT ->IF_ELSE_STATEMENT ELSE STATEMENT 74
 	public static final int IfElseStatemnt_Else_Statemenet_TO_IfElseStatement = 74;
+	//OPT_EXPR -> EXPR SEMI(85)
+	public static final int  Expr_Semi_TO_OptExpr = 85;
+	//OPT_EXPR -> SEMI(86)
+	public static final int Semi_TO_OptExpr = 86;
+	//END_OPT_EXPR -> EXPR(87)
+	public static final int Expr_TO_EndOpt = 87;
+	//STATEMENT -> FOR LP OPT_EXPR  TEST SEMI END_OPT_EXPR RP STATEMENT(84)
+	public static final int FOR_OptExpr_Test_EndOptExpr_Statement_TO_Statement = 84;
+	//UNARY -> UNARY INCOP i++ (96)
+	public static final int Unary_Incop_TO_Unary = 96;
+	//UNARY -> INCOP UNARY ++i (97)
+	public static final int Incop_Unary_TO_Unary = 97;
+	//STATEMENT -> COMPOUND_STMT (71)
+	public static final int CompountStmt_TO_Statement = 71;
+	//DECL -> VAR_DECL EQUAL INITIALIZER 77
+	public static final int VarDecl_Equal_Initializer_TO_Decl = 77;
+	//INITIALIZER -> EXPR 78
+	public static final int Expr_TO_Initializer = 78;
+	//LOCAL_DEFS -> DEF_LIST(52)
+	public static final int DefList_TO_LocalDefs = 52;
+	//VAR_DECL ->  NEW_NAME(13)
+	public static final int NewName_TO_VarDecl = 13;
+	
 	
 	private int productionNum = 0;
 	
@@ -245,7 +268,7 @@ public class CGrammarInitializer {
     	addProduction(production, false);
     	
    
-    	//VAR_DECL ->  NEW_NAME
+    	//VAR_DECL ->  NEW_NAME(13)
     	right = getProductionRight(new int[]{CTokenType.NEW_NAME.ordinal()});
     	production = new Production(productionNum,CTokenType.VAR_DECL.ordinal(), 0, right);
     	productionNum++;

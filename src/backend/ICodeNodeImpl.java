@@ -1,6 +1,7 @@
 package backend;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -13,6 +14,7 @@ public class ICodeNodeImpl extends HashMap<ICodeKey, Object> implements ICodeNod
     private  ICodeNode parent;
     private  ArrayList<ICodeNode> children;
     String   name;
+    private  boolean isChildrenReverse = false;
     
     public ICodeNodeImpl(CTokenType type) {
     	this.type = type;
@@ -20,6 +22,7 @@ public class ICodeNodeImpl extends HashMap<ICodeKey, Object> implements ICodeNod
     	this.children = new ArrayList<ICodeNode>();
     	setAttribute(ICodeKey.TokenType, type);
     }
+    
     
     public ICodeNode addChild(ICodeNode node) {
     	if (node != null) {
@@ -30,7 +33,20 @@ public class ICodeNodeImpl extends HashMap<ICodeKey, Object> implements ICodeNod
     	return node;
     }
     
+   @Override
+   public boolean isChildrenReverse() {
+	   return isChildrenReverse;
+   }
    
+   @Override
+   public  void reverseChildren() {
+	   if (isChildrenReverse == true) {
+		   return;
+	   }
+	   
+	   Collections.reverse(this.getChildren());
+	   isChildrenReverse = true;
+   }
 
 	@Override
 	public ICodeNode getParent() {

@@ -41,14 +41,18 @@ public class CodeTreeBuilder {
     	case CGrammarInitializer.String_TO_Unary:
     		node = ICodeFactory.createICodeNode(CTokenType.UNARY);
     		if (production == CGrammarInitializer.Name_TO_Unary) {
-    			symbol =typeSystem.getSymbolByText(text, parser.getCurrentLevel());
-    			node.setAttribute(ICodeKey.SYMBOL, symbol);
+    			assignSymbolToNode(node, text);
     		} 
     		
     		node.setAttribute(ICodeKey.TEXT, text);
     		break;
     		
-    		case CGrammarInitializer.Unary_LB_Expr_RB_TO_Unary:
+    	case CGrammarInitializer.Unary_Incop_TO_Unary:
+    		node = ICodeFactory.createICodeNode(CTokenType.UNARY);
+    		node.addChild(codeNodeStack.pop());
+    		break;
+    		
+    	case CGrammarInitializer.Unary_LB_Expr_RB_TO_Unary:
     			//访问或更改数组元素
     			node = ICodeFactory.createICodeNode(CTokenType.UNARY);
     			node.addChild(codeNodeStack.pop());  //EXPR
@@ -101,6 +105,7 @@ public class CodeTreeBuilder {
     		node.addChild(codeNodeStack.pop());
     		break;
     	case CGrammarInitializer.Expr_Semi_TO_Statement:
+    	case CGrammarInitializer.CompountStmt_TO_Statement:
     		node = ICodeFactory.createICodeNode(CTokenType.STATEMENT);
 			node.addChild(codeNodeStack.pop());	
 			break;
@@ -108,15 +113,21 @@ public class CodeTreeBuilder {
     	case CGrammarInitializer.LocalDefs_TO_Statement:
     		node = ICodeFactory.createICodeNode(CTokenType.STATEMENT);
     		break;
-    		
+    		  		
     	case CGrammarInitializer.Statement_TO_StmtList:
     		node = ICodeFactory.createICodeNode(CTokenType.STMT_LIST);
     		if (codeNodeStack.size() > 0) {
     			node.addChild(codeNodeStack.pop());	
     		}
-    		
     		break;
     		
+    	case CGrammarInitializer.FOR_OptExpr_Test_EndOptExpr_Statement_TO_Statement:
+    		node = ICodeFactory.createICodeNode(CTokenType.STATEMENT);
+    		node.addChild(codeNodeStack.pop());
+    		node.addChild(codeNodeStack.pop());
+    		node.addChild(codeNodeStack.pop());
+    		node.addChild(codeNodeStack.pop());
+    		break;
     		
     	case CGrammarInitializer.StmtList_Statement_TO_StmtList:
     		node = ICodeFactory.createICodeNode(CTokenType.STMT_LIST);
@@ -140,6 +151,19 @@ public class CodeTreeBuilder {
     		node.addChild(codeNodeStack.pop()); //IfStatement
     		node.addChild(codeNodeStack.pop()); // statement
     		break;
+    		
+    	case CGrammarInitializer.Expr_Semi_TO_OptExpr:
+    	case CGrammarInitializer.Semi_TO_OptExpr:
+    		node = ICodeFactory.createICodeNode(CTokenType.OPT_EXPR);
+    		if (production == CGrammarInitializer.Expr_Semi_TO_OptExpr) {
+    			node.addChild(codeNodeStack.pop());
+    		}
+    		break;
+    		
+    	case CGrammarInitializer.Expr_TO_EndOpt:
+    		node = ICodeFactory.createICodeNode(CTokenType.END_OPT_EXPR);
+    		node.addChild(codeNodeStack.pop());
+    		break;
     	}
     	
     	
@@ -153,7 +177,11 @@ public class CodeTreeBuilder {
     }
     
     
-    
+    private void assignSymbolToNode(ICodeNode node, String text) {
+    	Symbol symbol = typeSystem.getSymbolByText(text, parser.getCurrentLevel());
+		node.setAttribute(ICodeKey.SYMBOL, symbol);
+	    node.setAttribute(ICodeKey.TEXT, text);
+    }
     
     
     public ICodeNode getCodeTreeRoot() {

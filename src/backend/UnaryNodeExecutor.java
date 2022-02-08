@@ -1,5 +1,7 @@
 package backend;
 
+import java.util.Collections;
+
 import frontend.CGrammarInitializer;
 import frontend.CTokenType;
 import frontend.Declarator;
@@ -31,9 +33,7 @@ public class UnaryNodeExecutor extends BaseExecutor{
     		}
     		
     		break;
-    		
-    	
-    		
+    				
     	case CGrammarInitializer.Name_TO_Unary:
     		symbol = (Symbol)root.getAttribute(ICodeKey.SYMBOL);
     		root.setAttribute(ICodeKey.VALUE, symbol.getValue());
@@ -63,6 +63,20 @@ public class UnaryNodeExecutor extends BaseExecutor{
 			}catch (Exception e) {
 				System.err.println(e.getMessage());
 				System.exit(1);
+			}
+    		break;
+    		
+        case CGrammarInitializer.Unary_Incop_TO_Unary:
+        	symbol = (Symbol)root.getChildren().get(0).getAttribute(ICodeKey.SYMBOL);
+        	Integer val = (Integer)symbol.getValue();
+        	IValueSetter setter;
+    		setter = (IValueSetter)symbol;
+    		try {
+				setter.setValue(val + 1);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				System.err.println("Runtime Error: Assign Value Error");
 			}
     		break;
     	}

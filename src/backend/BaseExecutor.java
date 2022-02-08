@@ -5,7 +5,8 @@ import java.util.Collections;
 public abstract class BaseExecutor implements Executor{
     protected void executeChildren(ICodeNode root) {
     	ExecutorFactory factory = ExecutorFactory.getExecutorFactory();
-    	Collections.reverse(root.getChildren());
+    	root.reverseChildren();
+    	
     	int i = 0;
     	while (i < root.getChildren().size()) {
     		ICodeNode child = root.getChildren().get(i);
@@ -29,15 +30,13 @@ public abstract class BaseExecutor implements Executor{
     }
     
     protected ICodeNode executeChild(ICodeNode root, int childIdx) {
-    	Collections.reverse(root.getChildren());
+    	//把孩子链表的倒转放入到节点本身，减少逻辑耦合性
+    	root.reverseChildren();
     	ICodeNode child;
     	ExecutorFactory factory = ExecutorFactory.getExecutorFactory();
 		child = (ICodeNode)root.getChildren().get(childIdx);  
 		Executor executor = factory.getExecutor(child);
     	ICodeNode res = (ICodeNode)executor.Execute(child);
-    	 
-    	//每次调用该函数时都会把链表倒转，所以执行结束后要把链表元素的次序恢复原状
-    	Collections.reverse(root.getChildren()); 
     	
     	return res;
     }
