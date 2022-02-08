@@ -86,6 +86,13 @@ public class CGrammarInitializer {
 	public static final int DefList_TO_LocalDefs = 52;
 	//VAR_DECL ->  NEW_NAME(13)
 	public static final int NewName_TO_VarDecl = 13;
+	//COMPOUND_STMT-> LC LOCAL_DEFS STMT_LIST RC(51)
+	public static final int LocalDefs_StmtList_TO_CompoundStmt = 51;
+	//EXT_DEF -> OPT_SPECIFIERS FUNCT_DECL COMPOUND_STMT(50)
+	public static final int OptSpecifiers_FunctDecl_CompoundStmt_TO_ExtDef = 50;
+	//UNARY -> UNARY LP RP  fun()
+	public static final int Unary_LP_RP_TO_Unary = 103;
+	
 	
 	
 	private int productionNum = 0;
@@ -992,6 +999,17 @@ public class CGrammarInitializer {
     	right = getProductionRight( new int[]{CTokenType.VAR_DECL.ordinal(), CTokenType.LB.ordinal(), CTokenType.CONST_EXPR.ordinal(),
     			CTokenType.RB.ordinal()});
     	production = new Production(productionNum,CTokenType.VAR_DECL.ordinal(),0, right);
+    	productionNum++;
+    	addProduction(production, false);
+    	
+    	//COMPOUND_STMT-> LC  STMT_LIST RC(51)
+    	/*
+    	 * 函数定义：bar() { foo();}
+    	 * 运行函数定义时没有变量声明
+    	 */
+    	right = getProductionRight( new int[]{CTokenType.LC.ordinal(),
+    			CTokenType.STMT_LIST.ordinal(), CTokenType.RC.ordinal()});
+    	production = new Production(productionNum,CTokenType.COMPOUND_STMT.ordinal(),0, right);
     	productionNum++;
     	addProduction(production, false);
     	

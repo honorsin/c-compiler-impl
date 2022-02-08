@@ -222,6 +222,13 @@ public class LRStateTableParser {
     		setFunctionSymbol(false);
     		break;
     		
+    	case CGrammarInitializer.OptSpecifiers_FunctDecl_CompoundStmt_TO_ExtDef:
+    		symbol = (Symbol)valueStack.get(valueStack.size() - 2);
+    		specifier = (TypeLink)(valueStack.get(valueStack.size() - 3));
+    		typeSystem.addSpecifierToDeclaration(specifier, symbol);
+    		typeSystem.addSymbolsToTable(symbol);
+    		break;
+    		
     	case CGrammarInitializer.Name_To_Tag:
     		attributeForParentNode = typeSystem.getStructObjFromTable(text);
     		if (attributeForParentNode == null) {

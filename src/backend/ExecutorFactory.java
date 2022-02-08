@@ -48,6 +48,15 @@ public class ExecutorFactory {
     	case INITIALIZER:
     		return new InitializerExecutor();
     		
+    	case COMPOUND_STMT:
+    		return new CompoundStmtExecutor();
+    		
+    	case FUNCT_DECL:
+    		return new FunctDeclExecutor();
+    		
+    	case EXT_DEF:
+    		return new ExtDefExecutor();
+    		
     	}
     	
     	return null;

@@ -79,6 +79,17 @@ public class UnaryNodeExecutor extends BaseExecutor{
 				System.err.println("Runtime Error: Assign Value Error");
 			}
     		break;
+    		
+        case CGrammarInitializer.Unary_LP_RP_TO_Unary:
+        	//先获得函数名
+        	String funcName = (String)root.getChildren().get(0).getAttribute(ICodeKey.TEXT);
+        	//找到函数执行树头节点
+        	ICodeNode func = CodeTreeBuilder.getCodeTreeBuilder().getFunctionNodeByName(funcName);
+        	if (func != null) {
+        		Executor executor = ExecutorFactory.getExecutorFactory().getExecutor(func);
+        		executor.Execute(func);
+        	}
+        	break;
     	}
     	
     	return root;

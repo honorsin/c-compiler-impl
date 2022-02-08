@@ -44,7 +44,7 @@ public class ICodeNodeImpl extends HashMap<ICodeKey, Object> implements ICodeNod
 		   return;
 	   }
 	   
-	   Collections.reverse(this.getChildren());
+	   Collections.reverse(children);
 	   isChildrenReverse = true;
    }
 
@@ -56,6 +56,9 @@ public class ICodeNodeImpl extends HashMap<ICodeKey, Object> implements ICodeNod
 
 	@Override
 	public ArrayList<ICodeNode> getChildren() {
+		//注意，有可能会改变原有逻辑
+		reverseChildren();
+		
 		// TODO Auto-generated method stub
 		return children;
 	}
