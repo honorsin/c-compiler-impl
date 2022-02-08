@@ -3,6 +3,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import backend.ClibCall;
+
 
 public class TypeSystem {
 	private static TypeSystem typeSystem = null;
@@ -198,6 +200,11 @@ public class TypeSystem {
     }
     
     public Symbol getSymbolByText(String text, int level) {
+    	ClibCall libCall = ClibCall.getInstance();
+    	if (libCall.isAPICall(text)) {
+    	    return null;	
+    	}
+    	
     	ArrayList<Symbol> symbolList = typeSystem.getSymbol(text);
     	int i = 0;
     	Symbol symbol = null;

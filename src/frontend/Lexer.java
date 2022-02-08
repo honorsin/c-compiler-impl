@@ -163,11 +163,29 @@ public class Lexer {
     		            return CTokenType.WHITE_SPACE.ordinal();
 
     		    	case '"':
-    		    		inString = !inString;
-    		    		if (inString == false) {
-    		    			return CTokenType.STRING.ordinal();
+    		    		i++;
+    		    		int begin = i;
+    		    		while (i < current.length()) {
+    		    			if (current.charAt(i) != '"') {
+    		    			yyleng++;
+    		    			}else {
+    		    				break;
+    		    			}
+    		    			
+    		    			i++;
     		    		}
-    		    		break;
+    		    			
+    		    		if (i >= current.length() && inString) {
+    		    			System.err.println("Missing the ending quatation mark!");
+    		    			System.exit(1);
+    		    		}
+    		    			
+    		    		yytext = current.substring(begin, yyleng+1);
+    		    		current = current.substring(yyleng + 2); 
+    		    		
+    		    		
+    		    		return CTokenType.STRING.ordinal();
+    		    		
     		    		
     		    	default:
     		    		if (isAlnum(current.charAt(i)) == false) {
@@ -175,15 +193,12 @@ public class Lexer {
     		    		}
     		    		else {
     		    			
-    		    			while (i < current.length() && isAlnum(current.charAt(i)) || inString) {
+    		    			while (i < current.length() && isAlnum(current.charAt(i)) ) {
     		    				i++;
     		    				yyleng++;
     		    			} // while (isAlnum(current.charAt(i)))
     		    			
-    		    			if (i >= current.length() && inString) {
-    		    				System.err.println("Missing the ending quatation mark!");
-    		    				System.exit(1);
-    		    			}
+    		    			
     		    			yytext = current.substring(0, yyleng);
     		    			current = current.substring(yyleng); 
     		    			return translateStringToToken();

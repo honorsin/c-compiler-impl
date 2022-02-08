@@ -45,8 +45,7 @@ public class FunctDeclExecutor extends BaseExecutor {
 		}
 		
 		
-		argsList = FunctionArgumentList.getFunctionArgumentList().getFuncArgList();
-		Collections.reverse(argsList);
+		argsList = FunctionArgumentList.getFunctionArgumentList().getFuncArgList(true);
 		Symbol eachSym = args;
 		int count = 0;
 		while (eachSym != null) {

@@ -14,14 +14,14 @@ public class ArgsExecutor extends BaseExecutor {
 		switch (production) {
 		case CGrammarInitializer.NoCommaExpr_TO_Args:
 			child = (ICodeNode)executeChild(root, 0);
-			int val = (Integer)child.getAttribute(ICodeKey.VALUE);
-			argList.add(val);
+			Object objVal = child.getAttribute(ICodeKey.VALUE);
+			argList.add(objVal);
 			break;
 			
 		case CGrammarInitializer.NoCommaExpr_Comma_Args_TO_Args:
 			child = executeChild(root, 0);
-			val = (Integer)child.getAttribute(ICodeKey.VALUE);
-			argList.add(val);
+			objVal = child.getAttribute(ICodeKey.VALUE);
+			argList.add(objVal);
 			
 			child = (ICodeNode)executeChild(root, 1);
 			ArrayList<Object> list = (ArrayList<Object>)child.getAttribute(ICodeKey.VALUE);
