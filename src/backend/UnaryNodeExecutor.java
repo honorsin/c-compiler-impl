@@ -95,8 +95,13 @@ public class UnaryNodeExecutor extends BaseExecutor{
         	ICodeNode func = CodeTreeBuilder.getCodeTreeBuilder().getFunctionNodeByName(funcName);
         	if (func != null) {
         		Executor executor = ExecutorFactory.getExecutorFactory().getExecutor(func);
-                
         		executor.Execute(func);
+        	}
+        	
+        	Object returnVal = func.getAttribute(ICodeKey.VALUE);
+        	if (returnVal != null) {
+        		System.out.println("function call with name " + funcName + " has return value that is " + returnVal.toString());
+        		root.setAttribute(ICodeKey.VALUE, returnVal);
         	}
         	break;
     	}

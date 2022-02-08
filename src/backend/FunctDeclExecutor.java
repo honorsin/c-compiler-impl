@@ -66,15 +66,7 @@ public class FunctDeclExecutor extends BaseExecutor {
 		}
 	}
 	
-	public void removeArgsFromTable() {
-		Symbol symbol = (Symbol)currentNode.getAttribute(ICodeKey.SYMBOL);
-		Symbol arg = symbol.getArgList();
-		TypeSystem typeSystem = TypeSystem.getTypeSystem();
-		while (arg != null) {
-			typeSystem.removeSymbolFromTable(arg);
-			arg = arg.getNextSymbol();
-		}
-	}
+	
 	
 	
 }

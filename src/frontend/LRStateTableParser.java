@@ -138,6 +138,7 @@ public class LRStateTableParser {
     }
     
     private void takeActionForReduce(int productNum) {
+    
     	switch(productNum) {
     	case CGrammarInitializer.TYPE_TO_TYPE_SPECIFIER:
     		attributeForParentNode = typeSystem.newType(text);

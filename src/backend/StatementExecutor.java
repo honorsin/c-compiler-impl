@@ -14,6 +14,7 @@ public class StatementExecutor extends BaseExecutor{
 	 @Override 
 	 public Object Execute(ICodeNode root) {
 		 int production = (int)root.getAttribute(ICodeKey.PRODUCTION);
+		 ICodeNode node;
 		 
 		 switch (production) {
 		 case CGrammarInitializer.FOR_OptExpr_Test_EndOptExpr_Statement_TO_Statement:
@@ -29,6 +30,20 @@ public class StatementExecutor extends BaseExecutor{
 			 }
 			 
 			 break;
+			 
+		 case  CGrammarInitializer.Return_Semi_TO_Statement:
+			 isContinueExecution(false);
+			 
+			 break;
+			 
+		 case  CGrammarInitializer.Return_Expr_Semi_TO_Statement:
+			 node = executeChild(root, 0);
+			 Object obj = node.getAttribute(ICodeKey.VALUE);
+			 setReturnObj(obj);
+			 isContinueExecution(false);
+			 
+			 break;
+			 
 		 default:
 			 executeChildren(root);
 			

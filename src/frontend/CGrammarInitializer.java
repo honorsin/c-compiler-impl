@@ -98,6 +98,11 @@ public class CGrammarInitializer {
 	public static final int NoCommaExpr_TO_Args = 104;
 	//ARGS -> NO_COMMA_EXPR COMMA ARGS (105)
 	public static final int NoCommaExpr_Comma_Args_TO_Args = 105;
+	//STATEMENT -> RETURN SEMI (111)
+	public static final int Return_Semi_TO_Statement = 111;
+	//STATEMENT -> RETURN EXPR SEMI (64)
+	public static final int Return_Expr_Semi_TO_Statement = 64;
+	
 	
 	private int productionNum = 0;
 	
@@ -1008,7 +1013,7 @@ public class CGrammarInitializer {
     	productionNum++;
     	addProduction(production, false);
     	
-    	//COMPOUND_STMT-> LC  STMT_LIST RC(51)
+    	//COMPOUND_STMT-> LC  STMT_LIST RC(110)
     	/*
     	 * 函数定义：bar() { foo();}
     	 * 运行函数定义时没有变量声明
@@ -1018,6 +1023,14 @@ public class CGrammarInitializer {
     	production = new Production(productionNum,CTokenType.COMPOUND_STMT.ordinal(),0, right);
     	productionNum++;
     	addProduction(production, false);
+    	
+    	//STATEMENT -> RETURN SEMI (111)
+    	right = getProductionRight( new int[]{CTokenType.RETURN.ordinal(),
+    			CTokenType.SEMI.ordinal()});
+    	production = new Production(productionNum,CTokenType.STATEMENT.ordinal(),0, right);
+    	productionNum++;
+    	addProduction(production, false);
+    	
     	
     }
     

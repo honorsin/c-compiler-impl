@@ -15,12 +15,15 @@ public class ExtDefExecutor extends BaseExecutor {
 			root.setAttribute(ICodeKey.TEXT, funcName);
 			
 			executeChild(root, 1);
-			child = root.getChildren().get(1);
-			Object returnVal = child.getAttribute(ICodeKey.VALUE);
+			
+			Object returnVal = getReturnObj();
+			clearReturnObj();
+			
 			if (returnVal != null) {
 				root.setAttribute(ICodeKey.VALUE, returnVal);
 			}
 			
+			isContinueExecution(true);
 			
 			break;
 		}

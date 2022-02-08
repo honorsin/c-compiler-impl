@@ -171,6 +171,7 @@ public class CodeTreeBuilder {
     		node.addChild(codeNodeStack.pop()); //IfStatement
     		node.addChild(codeNodeStack.pop()); // statement
     		break;
+    	
     		
     	case CGrammarInitializer.Expr_Semi_TO_OptExpr:
     	case CGrammarInitializer.Semi_TO_OptExpr:
@@ -225,6 +226,14 @@ public class CodeTreeBuilder {
     	case CGrammarInitializer.NoCommaExpr_Comma_Args_TO_Args:
     		node = ICodeFactory.createICodeNode(CTokenType.ARGS);
     		node.addChild(codeNodeStack.pop());
+    		node.addChild(codeNodeStack.pop());
+    		break;
+    		
+    	case CGrammarInitializer.Return_Semi_TO_Statement:
+    		node = ICodeFactory.createICodeNode(CTokenType.STATEMENT);
+    		break;
+    	case CGrammarInitializer.Return_Expr_Semi_TO_Statement:
+    		node = ICodeFactory.createICodeNode(CTokenType.STATEMENT);
     		node.addChild(codeNodeStack.pop());
     		break;
     		
