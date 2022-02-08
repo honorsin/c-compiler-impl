@@ -30,6 +30,10 @@ public class Symbol implements IValueSetter{
     	this.symbolScope = scope;
     }
     
+    public String getScope() {
+    	return symbolScope;
+    }
+    
     public boolean equals(Symbol symbol) {
     	if (this.name.equals(symbol.name) && this.level == symbol.level && 
     			this.symbolScope.equals(symbol.symbolScope)) {
@@ -45,7 +49,10 @@ public class Symbol implements IValueSetter{
     
     @Override
     public void setValue(Object obj) {
-    	System.out.println("Assign Value of " + obj.toString() + " to Variable " + name);
+    	if (obj != null) {
+    		System.out.println("Assign Value of " + obj.toString() + " to Variable " + name);	
+    	}
+    	
     	this.value = obj;
     }
     

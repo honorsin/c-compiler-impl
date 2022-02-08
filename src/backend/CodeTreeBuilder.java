@@ -68,6 +68,8 @@ public class CodeTreeBuilder {
     		break;
     		
     	case CGrammarInitializer.Unary_Incop_TO_Unary:
+    	case CGrammarInitializer.Unary_DecOp_TO_Unary:
+    	case CGrammarInitializer.LP_Expr_RP_TO_Unary:
     		node = ICodeFactory.createICodeNode(CTokenType.UNARY);
     		node.addChild(codeNodeStack.pop());
     		break;
@@ -87,8 +89,6 @@ public class CodeTreeBuilder {
     		node.addChild(child);
     		break;
     		
-        
-    		
     	case CGrammarInitializer.Binary_TO_NoCommaExpr:
     	case CGrammarInitializer.NoCommaExpr_Equal_NoCommaExpr_TO_NoCommaExpr:
     		node = ICodeFactory.createICodeNode(CTokenType.NO_COMMA_EXPR);
@@ -103,10 +103,13 @@ public class CodeTreeBuilder {
     		break;
     		
     	case CGrammarInitializer.Binary_Plus_Binary_TO_Binary:
+    	case CGrammarInitializer.Binary_DivOp_Binary_TO_Binary:
+    	case CGrammarInitializer.Binary_Minus_Binary_TO_Binary:
     		node = ICodeFactory.createICodeNode(CTokenType.BINARY);
     		node.addChild(codeNodeStack.pop());
     		node.addChild(codeNodeStack.pop());
     		break;
+    		
     		
        case CGrammarInitializer.Binary_RelOP_Binary_TO_Binray:
     	   node = ICodeFactory.createICodeNode(CTokenType.BINARY);

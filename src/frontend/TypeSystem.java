@@ -2,6 +2,7 @@ package frontend;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import backend.ClibCall;
 
@@ -21,6 +22,21 @@ public class TypeSystem {
 	}
 	private HashMap<String, ArrayList<Symbol>> symbolTable = new HashMap<String, ArrayList<Symbol>>();
 	private HashMap<String, StructDefine> structTable = new HashMap<String, StructDefine>();
+	
+	public ArrayList<Symbol> getSymbolsByScope(String scope) {
+		ArrayList<Symbol> list = new ArrayList<Symbol>();
+		for (Map.Entry<String, ArrayList<Symbol>> entry : symbolTable.entrySet()) {
+			ArrayList<Symbol> args = entry.getValue();
+			for (int i = 0; i < args.size(); i++) {
+				Symbol sym = args.get(i);
+				if (sym.getScope().equals(scope)) {
+					list.add(sym);
+				}
+			}
+		}
+		
+		return list;
+	}
 	
 	public void addStructToTable(StructDefine struct) {
 		if (structTable.containsKey(struct.getTag())) {

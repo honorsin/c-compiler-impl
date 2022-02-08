@@ -107,7 +107,7 @@ public class Lexer {
     		    			return CTokenType.STRUCTOP.ordinal();
     		    		} else if (current.charAt(i+1) == '-') {
     		    			current = current.substring(2);
-    		    			return CTokenType.INCOP.ordinal();
+    		    			return CTokenType.DECOP.ordinal();
     		    		}
     		    		
     		    		current = current.substring(1);
@@ -142,12 +142,13 @@ public class Lexer {
     		    	case '>':
     		    	case '<':
     		    		if (current.charAt(i + 1) == '=') {
+    		    			yytext = current.substring(0, 2);
     		    			current = current.substring(2);
-    		    			yytext = current;
+    		    			
     		    		} else if ((current.charAt(i) == '<' && current.charAt(i+1) == '<')
     		    				|| (current.charAt(i) == '>' && current.charAt(i+1) == '>')) {
+    		    			yytext = current.substring(0, 2);
     		    			current = current.substring(2);
-    		    			yytext = current;
     		    			return CTokenType.SHIFTOP.ordinal();
     		    		}
     		    		else {

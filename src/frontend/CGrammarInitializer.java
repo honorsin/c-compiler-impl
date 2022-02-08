@@ -82,6 +82,9 @@ public class CGrammarInitializer {
 	public static final int Unary_Incop_TO_Unary = 96;
 	//UNARY -> INCOP UNARY ++i (97)
 	public static final int Incop_Unary_TO_Unary = 97;
+	//UNARY -> MINUS UNARY
+	public static final int Minus_Unary_TO_Unary = 98;
+	
 	//STATEMENT -> COMPOUND_STMT (71)
 	public static final int CompountStmt_TO_Statement = 71;
 	//DECL -> VAR_DECL EQUAL INITIALIZER 77
@@ -108,7 +111,14 @@ public class CGrammarInitializer {
 	public static final int Return_Semi_TO_Statement = 111;
 	//STATEMENT -> RETURN EXPR SEMI (64)
 	public static final int Return_Expr_Semi_TO_Statement = 64;
-	
+	//UNARY -> LP EXPR RP (112)
+	public static final int LP_Expr_RP_TO_Unary = 112;
+	//UNARY -> UNARY DECOP i--
+	public static final int Unary_DecOp_TO_Unary = 113;
+	//BINARY -> BINARY DIVOP BINARY(90)
+	public static final int Binary_DivOp_Binary_TO_Binary = 90;
+	//BINARY -> BINARY MINUS BINARY(95)
+	public static final int Binary_Minus_Binary_TO_Binary = 95;
 	
 	private int productionNum = 0;
 	
@@ -1037,7 +1047,18 @@ public class CGrammarInitializer {
     	productionNum++;
     	addProduction(production, false);
     	
+    	//UNARY -> LP EXPR RP (112)
+    	right = getProductionRight( new int[]{CTokenType.LP.ordinal(),
+    			CTokenType.EXPR.ordinal(), CTokenType.RP.ordinal()});
+    	production = new Production(productionNum,CTokenType.UNARY.ordinal(),0, right);
+    	productionNum++;
+    	addProduction(production, false);
     	
+    	//UNARY -> UNARY DECOP i-- (113)
+    	right = getProductionRight( new int[]{CTokenType.UNARY.ordinal(), CTokenType.DECOP.ordinal()});
+    	production = new Production(productionNum,CTokenType.UNARY.ordinal(),0, right);
+    	productionNum++;
+    	addProduction(production, false);
     }
     
     private void addProduction(Production production,boolean nullable) {
