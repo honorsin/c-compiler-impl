@@ -172,6 +172,12 @@ public class CodeTreeBuilder {
     		node.addChild(codeNodeStack.pop()); // statement
     		break;
     	
+    	case CGrammarInitializer.While_LP_Test_Rp_TO_Statement:
+    	case CGrammarInitializer.Do_Statement_While_Test_To_Statement:
+    		node = ICodeFactory.createICodeNode(CTokenType.STATEMENT);
+    		node.addChild(codeNodeStack.pop());
+    		node.addChild(codeNodeStack.pop());
+    		break;
     		
     	case CGrammarInitializer.Expr_Semi_TO_OptExpr:
     	case CGrammarInitializer.Semi_TO_OptExpr:
