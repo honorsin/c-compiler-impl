@@ -33,8 +33,10 @@ public class TypeSystem {
 		return structTable.get(tag);
 	}
 	
-	public void addSymbolsToTable(Symbol headSymbol) {
+	public void addSymbolsToTable(Symbol headSymbol, String scope) {
 		while (headSymbol != null) {
+			headSymbol.addScope(scope);
+			
 			ArrayList<Symbol> symList = symbolTable.get(headSymbol.name);
 			if (symList == null) {
 				symList = new ArrayList<Symbol>();
@@ -49,6 +51,20 @@ public class TypeSystem {
 		}
 	}
 	
+	public void removeSymbolFromTable(Symbol symbol) {
+		ArrayList<Symbol> symList = symbolTable.get(symbol.name);
+		int pos = 0;
+		while (pos < symList.size()) {
+			Symbol sym = symList.get(pos);
+			if (sym.getLevel() == symbol.getLevel()) {
+				symList.remove(pos);
+				return;
+			}
+			
+			pos++;
+		}
+	}
+	
 	public ArrayList<Symbol> getSymbol(String text) {
 		return symbolTable.get(text);
 	}
@@ -56,9 +72,10 @@ public class TypeSystem {
 	private void handleDublicateSymbol(Symbol symbol, ArrayList<Symbol>symList) {
 		boolean harmless = true;
 		Iterator it = symList.iterator();
+		
 		while (it.hasNext()) {
 			Symbol sym = (Symbol)it.next();
-			if (sym.level == symbol.level) {
+			if (sym.equals(symbol) == true) {
 				//TODO, handle duplication here
 				System.err.println("Symbol definition replicate: " + sym.name);
 				System.exit(1);

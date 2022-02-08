@@ -25,6 +25,9 @@ public class BottomUpParser {
     	
     	CodeTreeBuilder treeBuilder = CodeTreeBuilder.getCodeTreeBuilder();
     	Intepretor intepretor = Intepretor.getIntepretor();
-    	intepretor.Execute(treeBuilder.getCodeTreeRoot());
+    	if (intepretor != null) {
+    		intepretor.Execute(treeBuilder.getCodeTreeRoot());	
+    	}
+    	
     }
 }

@@ -1,5 +1,6 @@
 package backend;
 
+import java.util.ArrayList;
 import java.util.Collections;
 
 import frontend.CGrammarInitializer;
@@ -81,12 +82,20 @@ public class UnaryNodeExecutor extends BaseExecutor{
     		break;
     		
         case CGrammarInitializer.Unary_LP_RP_TO_Unary:
+        case CGrammarInitializer.Unary_LP_ARGS_RP_TO_Unary:
         	//先获得函数名
         	String funcName = (String)root.getChildren().get(0).getAttribute(ICodeKey.TEXT);
+        	if (production == CGrammarInitializer.Unary_LP_ARGS_RP_TO_Unary) {
+        		ICodeNode argsNode = root.getChildren().get(1);
+        		ArrayList<Object> argList = (ArrayList<Object>)argsNode.getAttribute(ICodeKey.VALUE);
+            	FunctionArgumentList.getFunctionArgumentList().setFuncArgList(argList);	
+        	}
+        	
         	//找到函数执行树头节点
         	ICodeNode func = CodeTreeBuilder.getCodeTreeBuilder().getFunctionNodeByName(funcName);
         	if (func != null) {
         		Executor executor = ExecutorFactory.getExecutorFactory().getExecutor(func);
+                
         		executor.Execute(func);
         	}
         	break;

@@ -38,6 +38,8 @@ public class CodeTreeBuilder {
     	valueStack = parser.getValueStack();
     }
     
+   
+    
     public ICodeNode buildCodeTree(int production, String text) {
     	ICodeNode node = null;
     	Symbol symbol = null;
@@ -57,8 +59,14 @@ public class CodeTreeBuilder {
     	case CGrammarInitializer.Unary_LP_RP_TO_Unary:
     		node = ICodeFactory.createICodeNode(CTokenType.UNARY);
     		node.addChild(codeNodeStack.pop());
-    		
     		break;
+    		
+    	case CGrammarInitializer.Unary_LP_ARGS_RP_TO_Unary:
+    		node = ICodeFactory.createICodeNode(CTokenType.UNARY);
+    		node.addChild(codeNodeStack.pop());
+    		node.addChild(codeNodeStack.pop());
+    		break;
+    		
     	case CGrammarInitializer.Unary_Incop_TO_Unary:
     		node = ICodeFactory.createICodeNode(CTokenType.UNARY);
     		node.addChild(codeNodeStack.pop());
@@ -183,10 +191,13 @@ public class CodeTreeBuilder {
     		break;
     		
     	case CGrammarInitializer.NewName_LP_RP_TO_FunctDecl:
+    	case CGrammarInitializer.NewName_LP_VarList_RP_TO_FunctDecl:
     		node = ICodeFactory.createICodeNode(CTokenType.FUNCT_DECL);
     		node.addChild(codeNodeStack.pop());
     		child =  node.getChildren().get(0);
     		functionName = (String)child.getAttribute(ICodeKey.TEXT);
+    		symbol = assignSymbolToNode(node, functionName);
+    		
     		break;
     	
     	case CGrammarInitializer.NewName_TO_VarDecl:
@@ -206,8 +217,16 @@ public class CodeTreeBuilder {
     		funcMap.put(functionName, node);
     		break;
     		
-    	
+    	case CGrammarInitializer.NoCommaExpr_TO_Args:
+    		node = ICodeFactory.createICodeNode(CTokenType.ARGS);
+    		node.addChild(codeNodeStack.pop());
+    		break;
     		
+    	case CGrammarInitializer.NoCommaExpr_Comma_Args_TO_Args:
+    		node = ICodeFactory.createICodeNode(CTokenType.ARGS);
+    		node.addChild(codeNodeStack.pop());
+    		node.addChild(codeNodeStack.pop());
+    		break;
     		
     	}
     	
@@ -222,10 +241,12 @@ public class CodeTreeBuilder {
     }
     
     
-    private void assignSymbolToNode(ICodeNode node, String text) {
+    private Symbol assignSymbolToNode(ICodeNode node, String text) {
     	Symbol symbol = typeSystem.getSymbolByText(text, parser.getCurrentLevel());
 		node.setAttribute(ICodeKey.SYMBOL, symbol);
 	    node.setAttribute(ICodeKey.TEXT, text);
+	    
+	    return symbol;
     }
     
     

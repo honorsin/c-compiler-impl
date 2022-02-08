@@ -92,8 +92,12 @@ public class CGrammarInitializer {
 	public static final int OptSpecifiers_FunctDecl_CompoundStmt_TO_ExtDef = 50;
 	//UNARY -> UNARY LP RP  fun()
 	public static final int Unary_LP_RP_TO_Unary = 103;
-	
-	
+	//UNARY -> UNARY LP ARGS RP fun(a, b ,c)
+	public static final int Unary_LP_ARGS_RP_TO_Unary = 102;
+	//ARGS -> NO_COMMA_EXPR  (104)
+	public static final int NoCommaExpr_TO_Args = 104;
+	//ARGS -> NO_COMMA_EXPR COMMA ARGS (105)
+	public static final int NoCommaExpr_Comma_Args_TO_Args = 105;
 	
 	private int productionNum = 0;
 	
@@ -919,26 +923,26 @@ public class CGrammarInitializer {
     	productionNum++;
     	addProduction(production, false);
     	
-    	//UNARY -> MINUS UNARY  a = -a
+    	//UNARY -> MINUS UNARY  a = -a (98)
     	right = getProductionRight( new int[]{CTokenType.MINUS.ordinal(), CTokenType.UNARY.ordinal()});
     	production = new Production(productionNum,CTokenType.UNARY.ordinal(),0, right);
     	productionNum++;
     	addProduction(production, false);
     	
-    	//UNARY -> STAR UNARY b = *a
+    	//UNARY -> STAR UNARY b = *a (99)
     	right = getProductionRight( new int[]{CTokenType.STAR.ordinal(), CTokenType.UNARY.ordinal()});
     	production = new Production(productionNum,CTokenType.UNARY.ordinal(),0, right);
     	productionNum++;
     	addProduction(production, false);
     	
-    	//UNARY -> UNARY STRUCTOP NAME  a = tag->name
+    	//UNARY -> UNARY STRUCTOP NAME  a = tag->name (100)
     	right = getProductionRight( new int[]{CTokenType.UNARY.ordinal(), CTokenType.STRUCTOP.ordinal(),
     			CTokenType.UNARY.ordinal()});
     	production = new Production(productionNum,CTokenType.UNARY.ordinal(),0, right);
     	productionNum++;
     	addProduction(production, false);
     	
-    	//UNARY -> UNARY LB EXPR RB b = a[2];
+    	//UNARY -> UNARY LB EXPR RB b = a[2]; (101)
     	right = getProductionRight( new int[]{CTokenType.UNARY.ordinal(), CTokenType.LB.ordinal(),
     			CTokenType.EXPR.ordinal(), CTokenType.RB.ordinal()});
     	
@@ -946,32 +950,34 @@ public class CGrammarInitializer {
     	productionNum++;
     	addProduction(production, false);
     	
-    	//UNARY -> UNARY LP ARGS RP fun(a, b ,c)
+    	//UNARY -> UNARY  LP ARGS RP  fun(a, b ,c) (102)
+    	//change
     	right = getProductionRight( new int[]{CTokenType.UNARY.ordinal(), CTokenType.LP.ordinal(),
     			CTokenType.ARGS.ordinal(), CTokenType.RP.ordinal()});
     	production = new Production(productionNum,CTokenType.UNARY.ordinal(),0, right);
     	productionNum++;
     	addProduction(production, false);
     	
-    	//UNARY -> UNARY LP RP  fun()
+    	//UNARY -> UNARY LP RP  fun() (103)
     	right = getProductionRight( new int[]{CTokenType.UNARY.ordinal(), CTokenType.LP.ordinal(),
     			CTokenType.RP.ordinal()});
     	production = new Production(productionNum,CTokenType.UNARY.ordinal(),0, right);
     	productionNum++;
     	addProduction(production, false);
     	
-    	//ARGS -> NO_COMMA_EXPR
-    	right = getProductionRight( new int[]{CTokenType.NO_COMMA_EXPR.ordinal()});
+    	//ARGS -> NO_COMMA_EXPR (104)
+    	right = getProductionRight( new int[]{ CTokenType.NO_COMMA_EXPR.ordinal()});
     	production = new Production(productionNum,CTokenType.ARGS.ordinal(),0, right);
     	productionNum++;
     	addProduction(production, false);
     	
-    	//ARGS -> NO_COMMA_EXPR COMMA ARGS
-    	right = getProductionRight( new int[]{CTokenType.NO_COMMA_EXPR.ordinal(), CTokenType.COMMA.ordinal(),
+    	//ARGS -> NO_COMMA_EXPR COMMA ARGS (105)
+    	right = getProductionRight( new int[]{ CTokenType.NO_COMMA_EXPR.ordinal(), CTokenType.COMMA.ordinal(),
     			CTokenType.ARGS.ordinal()});
-    	production = new Production(productionNum,CTokenType.UNARY.ordinal(),0, right);
+    	production = new Production(productionNum,CTokenType.ARGS.ordinal(),0, right);
     	productionNum++;
     	addProduction(production, false);
+    	
     }
     
     private void initRemaindingProduction() {

@@ -17,6 +17,10 @@ public class Intepretor implements Executor{
 	
 	@Override
 	public Object Execute(ICodeNode root) {
+		if (root == null) {
+			return null;
+		}
+		
 		ExecutorFactory factory = ExecutorFactory.getExecutorFactory();
 		Executor executor = factory.getExecutor(root);
 		executor.Execute(root);

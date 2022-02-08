@@ -13,7 +13,9 @@ public class LRStateTableParser {
 	int    nestingLevel = 0;
 	int    enumVal = 0;
 	String text = "";
-
+	public static final String GLOBAL_SCOPE = "global";
+	public String symbolScope = GLOBAL_SCOPE;
+	
 	private Object attributeForParentNode = null;
 	private TypeSystem typeSystem = TypeSystem.getTypeSystem();
 	private Stack<Integer> statusStack = new Stack<Integer>();
@@ -203,7 +205,9 @@ public class LRStateTableParser {
     		Symbol symbol = (Symbol)attributeForParentNode;
     		TypeLink specifier = (TypeLink)(valueStack.get(valueStack.size() - 3));
     		typeSystem.addSpecifierToDeclaration(specifier, symbol);
-    		typeSystem.addSymbolsToTable(symbol);
+    		typeSystem.addSymbolsToTable(symbol, symbolScope);
+    		
+    		
     		break;
     		
     	case CGrammarInitializer.VarDecl_Equal_Initializer_TO_Decl:
@@ -216,17 +220,31 @@ public class LRStateTableParser {
     		setFunctionSymbol(true);
     		Symbol argList = (Symbol)valueStack.get(valueStack.size() - 2);
     		((Symbol)attributeForParentNode).args = argList;
+    		typeSystem.addSymbolsToTable((Symbol)attributeForParentNode, symbolScope);
+    		//遇到函数定义，变量的scope名称要改为函数名,并把函数参数的scope改为函数名
+    		symbolScope = ((Symbol)attributeForParentNode).getName();
+    		Symbol sym = argList;
+    		while (sym != null) {
+    			sym.addScope(symbolScope);
+    			sym = sym.getNextSymbol();
+    		}
     		break;
     		
     	case CGrammarInitializer.NewName_LP_RP_TO_FunctDecl:
     		setFunctionSymbol(false);
+    		typeSystem.addSymbolsToTable((Symbol)attributeForParentNode, symbolScope);
+    		//遇到函数定义，变量的scope名称要改为函数名
+    		symbolScope = ((Symbol)attributeForParentNode).getName();
+    		
     		break;
     		
     	case CGrammarInitializer.OptSpecifiers_FunctDecl_CompoundStmt_TO_ExtDef:
     		symbol = (Symbol)valueStack.get(valueStack.size() - 2);
     		specifier = (TypeLink)(valueStack.get(valueStack.size() - 3));
     		typeSystem.addSpecifierToDeclaration(specifier, symbol);
-    		typeSystem.addSymbolsToTable(symbol);
+    		
+    		//函数定义结束后，接下来的变量作用范围应该改为global
+    		symbolScope = GLOBAL_SCOPE;
     		break;
     		
     	case CGrammarInitializer.Name_To_Tag:
@@ -271,7 +289,7 @@ public class LRStateTableParser {
     private void doEnum() {
     	Symbol symbol = (Symbol)attributeForParentNode;
     	if (convSymToIntConst(symbol, enumVal)) {
-    		typeSystem.addSymbolsToTable(symbol);
+    		typeSystem.addSymbolsToTable(symbol, symbolScope);
     		enumVal++;
     	}
     	else {
@@ -301,6 +319,7 @@ public class LRStateTableParser {
     		funcSymbol = (Symbol)valueStack.get(valueStack.size() - 3);
     	}
     	 
+    	
 		typeSystem.addDeclarator(funcSymbol, Declarator.FUNCTION);
 		attributeForParentNode = funcSymbol;
     }

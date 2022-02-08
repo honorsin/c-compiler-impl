@@ -10,7 +10,7 @@ public class Symbol implements IValueSetter{
     boolean   implicit;  //是否是匿名变量
     boolean   duplicate;   //是否是同名变量
     
-    Symbol    args;   //如果该符号对应的是函数名,那么args指向函数的输入参数符号列表
+    Symbol    args = null;   //如果该符号对应的是函数名,那么args指向函数的输入参数符号列表
     
     private Symbol    next = null;  //指向下一个同层次的变量符号
     
@@ -19,9 +19,24 @@ public class Symbol implements IValueSetter{
     TypeLink  typeLinkBegin = null;
     TypeLink  typeLinkEnd = null;
     
+    private String symbolScope = LRStateTableParser.GLOBAL_SCOPE;
+    
     public Symbol(String name, int level) {
     	this.name = name;
     	this.level = level;
+    }
+    
+    public void addScope(String scope) {
+    	this.symbolScope = scope;
+    }
+    
+    public boolean equals(Symbol symbol) {
+    	if (this.name.equals(symbol.name) && this.level == symbol.level && 
+    			this.symbolScope.equals(symbol.symbolScope)) {
+    		return true;
+    	}
+    	
+    	return false;
     }
     
     public String getName() {
@@ -36,6 +51,10 @@ public class Symbol implements IValueSetter{
     
     public Object getValue() {
     	return value;
+    }
+    
+    public Symbol getArgList() {
+    	return args;
     }
     
     public void addDeclarator(TypeLink type) {
