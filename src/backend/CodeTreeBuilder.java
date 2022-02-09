@@ -70,6 +70,7 @@ public class CodeTreeBuilder {
     	case CGrammarInitializer.Unary_Incop_TO_Unary:
     	case CGrammarInitializer.Unary_DecOp_TO_Unary:
     	case CGrammarInitializer.LP_Expr_RP_TO_Unary:
+    	case CGrammarInitializer.Start_Unary_TO_Unary:
     		node = ICodeFactory.createICodeNode(CTokenType.UNARY);
     		node.addChild(codeNodeStack.pop());
     		break;
@@ -260,7 +261,7 @@ public class CodeTreeBuilder {
     
     
     private Symbol assignSymbolToNode(ICodeNode node, String text) {
-    	Symbol symbol = typeSystem.getSymbolByText(text, parser.getCurrentLevel());
+    	Symbol symbol = typeSystem.getSymbolByText(text, parser.getCurrentLevel(), parser.symbolScope);
 		node.setAttribute(ICodeKey.SYMBOL, symbol);
 	    node.setAttribute(ICodeKey.TEXT, text);
 	    

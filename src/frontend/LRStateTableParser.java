@@ -179,7 +179,7 @@ public class LRStateTableParser {
     		break;
     		
     	case CGrammarInitializer.Name_TO_Unary:
-    		attributeForParentNode = typeSystem.getSymbolByText(text, nestingLevel);
+    		attributeForParentNode = typeSystem.getSymbolByText(text, nestingLevel, symbolScope);
     		break;
     		
     	case CGrammarInitializer.ExtDeclList_COMMA_ExtDecl_TO_ExtDeclList:

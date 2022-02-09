@@ -215,10 +215,14 @@ public class TypeSystem {
     	}
     }
     
-    public Symbol getSymbolByText(String text, int level) {
+    public Symbol getSymbolByText(String text, int level, String scope) {
     	ClibCall libCall = ClibCall.getInstance();
     	if (libCall.isAPICall(text)) {
     	    return null;	
+    	}
+    	
+    	if (scope.equals(text)) {
+    		scope = LRStateTableParser.GLOBAL_SCOPE;
     	}
     	
     	ArrayList<Symbol> symbolList = typeSystem.getSymbol(text);
@@ -226,12 +230,19 @@ public class TypeSystem {
     	Symbol symbol = null;
     	
     	while (i < symbolList.size()) {
-    		symbol = symbolList.get(0);
-    		if (symbolList.get(i).getLevel() == level) {
-    			return symbolList.get(i);
-    		} else if (symbolList.get(i).getLevel() >= symbol.getLevel()) {
+    		
+    		if (symbol == null && symbolList.get(i).getScope().equals(LRStateTableParser.GLOBAL_SCOPE)) {
+    			 symbol = symbolList.get(i);
+    		} 
+    		
+    		if (symbolList.get(i).getScope().equals(scope)) {
     			symbol = symbolList.get(i);
     		}
+    		
+    		if (symbol != null && symbolList.get(i).getLevel() >= level) {
+    			symbol = symbolList.get(i);
+    		}
+    		
     		i++;
     	}
     	

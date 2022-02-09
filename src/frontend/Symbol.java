@@ -94,6 +94,27 @@ public class Symbol implements IValueSetter{
     	return typeLinkBegin;
     }
     
+    public int getByteSize() {
+    	int size = 0;
+    	TypeLink head = typeLinkBegin;
+    	while (head != null) {
+    		if (head.isDeclarator != true) {
+    			Specifier sp = (Specifier)head.typeObject;
+    			if (sp.getLong() == true || sp.getType() == Specifier.INT) {
+    				size = 4;
+    				break;
+    			} else {
+    				size = 1;
+    				break;
+    			}
+    		}
+    		
+    		head = head.toNext();
+    	}
+    	
+    	return size;
+    }
+    
     public void addSpecifier(TypeLink type) {
     	if (typeLinkBegin == null) {
     		typeLinkBegin = type;

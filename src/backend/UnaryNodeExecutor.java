@@ -1,7 +1,9 @@
 package backend;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Map;
 
 import frontend.CGrammarInitializer;
 import frontend.CTokenType;
@@ -56,13 +58,24 @@ public class UnaryNodeExecutor extends BaseExecutor{
     		child = root.getChildren().get(1);
 			int index = (Integer)child.getAttribute(ICodeKey.VALUE);
 			
-			Declarator declarator = symbol.getDeclarator(Declarator.ARRAY);
 			try {
-				Object val = declarator.getElement(index);
-				root.setAttribute(ICodeKey.VALUE, val);
-				ArrayValueSetter setter = new ArrayValueSetter(symbol, index);
-				root.setAttribute(ICodeKey.SYMBOL, setter);
-				root.setAttribute(ICodeKey.TEXT, symbol.getName());
+				Declarator declarator = symbol.getDeclarator(Declarator.ARRAY);
+				if (declarator != null) {
+					Object val = declarator.getElement(index);
+					root.setAttribute(ICodeKey.VALUE, val);
+					ArrayValueSetter setter = new ArrayValueSetter(symbol, index);
+					root.setAttribute(ICodeKey.SYMBOL, setter);
+					root.setAttribute(ICodeKey.TEXT, symbol.getName());	
+				}
+				Declarator pointer = symbol.getDeclarator(Declarator.POINTER);
+				if (pointer != null) {
+					setPointerValue(root, symbol, index);
+					//create a PointerSetter
+					PointerValueSetter pv = new PointerValueSetter(symbol, index);
+					root.setAttribute(ICodeKey.SYMBOL, pv);
+					root.setAttribute(ICodeKey.TEXT, symbol.getName());	
+				}
+				
 			}catch (Exception e) {
 				System.err.println(e.getMessage());
 				System.exit(1);
@@ -91,6 +104,19 @@ public class UnaryNodeExecutor extends BaseExecutor{
         case CGrammarInitializer.LP_Expr_RP_TO_Unary:
         	child = root.getChildren().get(0);
         	copyChild(root, child);
+        	break;
+        
+        case CGrammarInitializer.Start_Unary_TO_Unary:
+        	child = root.getChildren().get(0); 
+        	int addr = (Integer)child.getAttribute(ICodeKey.VALUE); //get mem addr
+        	MemoryHeap memHeap = MemoryHeap.getInstance();
+        	Map.Entry<Integer, byte[]> entry = memHeap.getMem(addr);
+        	if (entry != null) {
+        	    int offset = addr - entry.getKey();
+        	    byte[] memByte = entry.getValue();
+        	    root.setAttribute(ICodeKey.VALUE, memByte[offset]);
+        	}
+        	
         	break;
     		
         case CGrammarInitializer.Unary_LP_RP_TO_Unary:
@@ -128,5 +154,18 @@ public class UnaryNodeExecutor extends BaseExecutor{
     	return root;
     }
 
-	
+	private void setPointerValue(ICodeNode root, Symbol symbol, int index) {
+		MemoryHeap memHeap = MemoryHeap.getInstance();
+		int addr = (Integer)symbol.getValue();
+		Map.Entry<Integer, byte[]> entry = memHeap.getMem(addr);
+		byte[] content = entry.getValue();
+	    if (symbol.getByteSize() == 1) {
+	    	root.setAttribute(ICodeKey.VALUE, content[index]);
+	    } else {
+	    	ByteBuffer buffer = ByteBuffer.allocate(4);
+	    	buffer.put(content, index, 4);
+	    	buffer.flip();
+	    	root.setAttribute(ICodeKey.VALUE, buffer.getLong());
+	    }
+	}
 }
