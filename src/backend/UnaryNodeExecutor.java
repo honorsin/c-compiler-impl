@@ -4,6 +4,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Stack;
 
 import frontend.CGrammarInitializer;
 import frontend.CTokenType;
@@ -11,11 +12,14 @@ import frontend.Declarator;
 import frontend.LRStateTableParser;
 import frontend.Symbol;
 
-public class UnaryNodeExecutor extends BaseExecutor{
+public class UnaryNodeExecutor extends BaseExecutor implements IExecutorReceiver{
+	private Symbol structObjSymbol = null;
+	private Symbol monitorSymbol = null;
 	
 	@Override
     public Object Execute(ICodeNode root) {
 		executeChildren(root);
+		
 		
     	int production = (Integer)root.getAttribute(ICodeKey.PRODUCTION); 
     	String text ;
@@ -109,6 +113,8 @@ public class UnaryNodeExecutor extends BaseExecutor{
         case CGrammarInitializer.Start_Unary_TO_Unary:
         	child = root.getChildren().get(0); 
         	int addr = (Integer)child.getAttribute(ICodeKey.VALUE); //get mem addr
+        	symbol = (Symbol)child.getAttribute(ICodeKey.SYMBOL);
+        	        	
         	MemoryHeap memHeap = MemoryHeap.getInstance();
         	Map.Entry<Integer, byte[]> entry = memHeap.getMem(addr);
         	int offset = addr - entry.getKey();
@@ -119,6 +125,7 @@ public class UnaryNodeExecutor extends BaseExecutor{
         	
         	DirectMemValueSetter directMemSetter = new DirectMemValueSetter(addr);
         	root.setAttribute(ICodeKey.SYMBOL, directMemSetter);
+        	
         	break;
     		
         case CGrammarInitializer.Unary_LP_RP_TO_Unary:
@@ -174,6 +181,13 @@ public class UnaryNodeExecutor extends BaseExecutor{
     		
     		root.setAttribute(ICodeKey.SYMBOL, args);
     		root.setAttribute(ICodeKey.VALUE, args.getValue());
+    		
+    		if (isSymbolStructPointer(symbol) == true) {
+    			structObjSymbol = symbol;
+    			monitorSymbol = args;
+    			ExecutorBrocasterImpl.getInstance().registerReceiverForAfterExe(this);
+    		}
+    		
         	break;
         	
     	}
@@ -195,4 +209,108 @@ public class UnaryNodeExecutor extends BaseExecutor{
 	    	root.setAttribute(ICodeKey.VALUE, buffer.getLong());
 	    }
 	}
+	
+	private boolean isSymbolStructPointer(Symbol symbol) {
+		if (symbol.getDeclarator(Declarator.POINTER) != null && symbol.getArgList() != null) {
+			return true;
+		}
+		
+		return false;
+	}
+	
+	@Override
+	public void handleExecutorMessage(ICodeNode code) {
+		int productNum = (Integer)code.getAttribute(ICodeKey.PRODUCTION);
+		Object object = code.getAttribute(ICodeKey.SYMBOL);
+		if(object == null || (object instanceof Symbol) == false) {
+			return;
+		}
+		
+        Symbol symbol = (Symbol)object;
+		if (productNum == CGrammarInitializer.NoCommaExpr_Equal_NoCommaExpr_TO_NoCommaExpr
+				&& symbol == monitorSymbol) {
+			System.out.println("UnaryNodeExecutor receive msg for assign execution");
+
+		}
+	}
+	
+	private void copyStructToMem(Symbol symbol) {
+		Integer addr = (Integer)symbol.getValue();
+		MemoryHeap memHeap = MemoryHeap.getInstance();
+    	Map.Entry<Integer, byte[]> entry = memHeap.getMem(addr);
+    	byte[] mems = entry.getValue();
+    	Stack<Symbol> stack = reverseStructSymbolList(symbol);
+    	int offset = 0;
+    	
+    	while (stack.empty() != true) {
+    		Symbol sym = stack.pop(); 
+    		
+    		try {
+				offset += writeStructVariablesToMem(sym, mems, offset);
+			} catch (Exception e) {
+		        System.err.println("error when copyin struct variables to memory");
+				e.printStackTrace();
+			}
+    	}
+	}
+	
+	private int writeStructVariablesToMem(Symbol symbol, byte[] mem, int offset) throws Exception{
+		if (symbol.getArgList() != null) {
+			 return writeStructVariablesToMem(symbol, mem, offset);
+		}
+		
+		int sz = symbol.getByteSize();
+		if (symbol.getValue() == null) {
+			return sz;
+		}
+		
+		if (symbol.getDeclarator(Declarator.ARRAY) == null) {
+			Integer val =  (Integer)symbol.getValue();
+			byte[] bytes = ByteBuffer.allocate(4).putInt(val).array();
+			for (int i = 3; i >= 4 - sz; i--) {
+				mem[offset + 3 - i] = bytes[i];
+			}
+			
+			return sz;
+		} else {
+			return copyArrayVariableToMem(symbol, mem, offset);
+		}
+	}
+	
+	private int copyArrayVariableToMem(Symbol symbol, byte[] mem, int offset) {
+		Declarator declarator = symbol.getDeclarator(Declarator.ARRAY);
+		if (declarator == null) {
+			return 0;
+		}
+		
+		int sz = symbol.getByteSize();
+		int elemCount = declarator.getElementNum();
+		for (int i = 0; i < elemCount; i++) {
+			try {
+				Integer val = (Integer)declarator.getElement(i);
+				byte[] bytes = ByteBuffer.allocate(sz).putInt(val).array();
+				for (int j = 0; j < sz; j++) {
+					mem[offset + j] = bytes[j];
+				}
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		return sz* elemCount;
+	}
+	
+	private Stack<Symbol>reverseStructSymbolList(Symbol symbol) {
+		Stack<Symbol> stack = new Stack<Symbol>();
+		Symbol sym = symbol.getArgList();
+		while (sym != null) {
+			stack.push(sym);
+			sym = sym.getNextSymbol();
+		}
+		
+		return stack;
+	}
+
+	
 }

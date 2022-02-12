@@ -1,10 +1,15 @@
-package backend;
+ package backend;
 
 import java.util.Collections;
 
 public abstract class BaseExecutor implements Executor{
 	private static boolean continueExecute = true;
 	private static Object  returnObj = null;
+	IExecutorBrocaster  executorBrocaster = null;
+	
+	public BaseExecutor() {
+		executorBrocaster = ExecutorBrocasterImpl.getInstance();
+	}
 	
 	protected void setReturnObj(Object obj) {
 	    this.returnObj = obj;	
@@ -34,6 +39,9 @@ public abstract class BaseExecutor implements Executor{
     		}
     		
     		ICodeNode child = root.getChildren().get(i);
+    		
+    		executorBrocaster.brocastBeforeExecution(child);
+    		
     		Executor executor = factory.getExecutor(child);
     		if (executor != null) {
     			executor.Execute(child);	
@@ -42,7 +50,8 @@ public abstract class BaseExecutor implements Executor{
     			System.err.println("Not suitable Executor found, node is: " + child.toString());
     		}
     		
-    	
+    		executorBrocaster.brocastAfterExecution(child);
+    		
     		i++;
     	}
     }
