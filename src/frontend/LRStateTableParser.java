@@ -208,7 +208,7 @@ public class LRStateTableParser {
     		typeSystem.addSpecifierToDeclaration(specifier, symbol);
     		typeSystem.addSymbolsToTable(symbol, symbolScope);
     		
-    		
+    		handleStructVariable(symbol);
     		break;
     		
     	case CGrammarInitializer.VarDecl_Equal_Initializer_TO_Decl:
@@ -249,6 +249,7 @@ public class LRStateTableParser {
     		break;
     		
     	case CGrammarInitializer.Name_To_Tag:
+    		symbolScope = text;
     		attributeForParentNode = typeSystem.getStructObjFromTable(text);
     		if (attributeForParentNode == null) {
     			attributeForParentNode = new StructDefine(text, nestingLevel, null);
@@ -285,7 +286,47 @@ public class LRStateTableParser {
     	codeTreeBuilder.buildCodeTree(productNum, text);
     }
     
-  
+   private void handleStructVariable(Symbol symbol) {
+	   if (symbol == null) {
+		   return;
+	   }
+	   
+	   //先看看变量是否属于struct类型
+	   boolean isStruct = false;
+	   TypeLink typeLink = symbol.typeLinkBegin;
+	   Specifier specifier = null;
+	   while (typeLink != null) {
+		   if (typeLink.isDeclarator == false) { 
+			   specifier = (Specifier)typeLink.getTypeObject();
+			   if (specifier.getType() == Specifier.STRUCTURE) {
+				   isStruct = true;
+				   break;
+			   }
+		   }
+		   
+		   typeLink = typeLink.toNext();
+	   }
+	   
+	   if (isStruct == true) {
+		   //把结构体定义中的每个变量拷贝一份，存储到当前的symbol中
+		   StructDefine structDefine = specifier.getStructObj();
+		   Symbol copy = null, headCopy = null, original = structDefine.getFields();
+		   while (original != null) {
+			   if (copy != null) {
+				  Symbol sym = original.copy();
+				  copy.setNextSymbol(sym);
+				  copy = sym;
+			   } else {
+				   copy = original.copy();
+				   headCopy = copy;
+			   }
+			   
+			   original = original.getNextSymbol();
+		   }
+		   
+		   symbol.setArgList(headCopy);
+	   }
+   }
     
     private void doEnum() {
     	Symbol symbol = (Symbol)attributeForParentNode;

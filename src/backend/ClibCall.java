@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
+import frontend.Declarator;
+import frontend.Symbol;
+
 public class ClibCall {
 	private Set<String> apiSet;
 	
@@ -11,6 +14,7 @@ public class ClibCall {
     	apiSet = new HashSet<String>();
     	apiSet.add("printf");
     	apiSet.add("malloc");
+    	apiSet.add("sizeof");
     }
     private static ClibCall instance = null;
     
@@ -35,9 +39,39 @@ public class ClibCall {
     	
     	case "malloc":
     		return handleMallocCall();
+    		
+    	case "sizeof":
+    		return handleSizeOfCall();
     	default:
     		return null;
     	}
+    }
+    
+    private Object handleSizeOfCall() {
+    	ArrayList<Object> symList = FunctionArgumentList.getFunctionArgumentList().getFuncArgSymsList(false);
+    	Integer totalSize = calculateVarSize((Symbol)symList.get(0));
+    	
+    	return totalSize;
+    }
+    
+    private Integer calculateVarSize(Symbol symbol) {
+    	int size = 0;
+    	if (symbol.getArgList() == null) {
+    		size = symbol.getByteSize();
+    	} else {
+    		Symbol head = symbol.getArgList();
+    		while (head != null) {
+    			size += calculateVarSize(head);
+    			head = head.getNextSymbol();
+    		}
+    	}
+    	
+    	Declarator declarator = symbol.getDeclarator(Declarator.ARRAY); 
+    	if ( declarator != null) {
+    		size = size * declarator.getElementNum();
+    	}
+    	
+    	return size;
     }
     
     private Object handleMallocCall() {

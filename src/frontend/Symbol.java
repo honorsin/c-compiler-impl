@@ -26,6 +26,18 @@ public class Symbol implements IValueSetter{
     	this.level = level;
     }
     
+    public Symbol copy() {
+    	Symbol symbol = new Symbol(this.name, this.level);
+    	symbol.args = this.args;
+    	symbol.next = this.next;
+    	symbol.value = this.value;
+    	symbol.typeLinkBegin = this.typeLinkBegin;
+    	symbol.typeLinkEnd = this.typeLinkEnd;
+    	symbol.symbolScope = this.symbolScope;
+    	
+    	return symbol;
+    }
+    
     public void addScope(String scope) {
     	this.symbolScope = scope;
     }
@@ -64,6 +76,10 @@ public class Symbol implements IValueSetter{
     	return args;
     }
     
+    public void setArgList(Symbol symbol) {
+    	this.args = symbol;
+    }
+    
     public void addDeclarator(TypeLink type) {
     	if (typeLinkBegin == null) {
     		typeLinkBegin = type;
@@ -100,7 +116,8 @@ public class Symbol implements IValueSetter{
     	while (head != null) {
     		if (head.isDeclarator != true) {
     			Specifier sp = (Specifier)head.typeObject;
-    			if (sp.getLong() == true || sp.getType() == Specifier.INT) {
+    			if (sp.getLong() == true || sp.getType() == Specifier.INT ||
+    			   getDeclarator(Declarator.POINTER) != null) {
     				size = 4;
     				break;
     			} else {

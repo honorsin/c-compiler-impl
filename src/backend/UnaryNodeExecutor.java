@@ -111,12 +111,14 @@ public class UnaryNodeExecutor extends BaseExecutor{
         	int addr = (Integer)child.getAttribute(ICodeKey.VALUE); //get mem addr
         	MemoryHeap memHeap = MemoryHeap.getInstance();
         	Map.Entry<Integer, byte[]> entry = memHeap.getMem(addr);
+        	int offset = addr - entry.getKey();
         	if (entry != null) {
-        	    int offset = addr - entry.getKey();
         	    byte[] memByte = entry.getValue();
         	    root.setAttribute(ICodeKey.VALUE, memByte[offset]);
         	}
         	
+        	DirectMemValueSetter directMemSetter = new DirectMemValueSetter(addr);
+        	root.setAttribute(ICodeKey.SYMBOL, directMemSetter);
         	break;
     		
         case CGrammarInitializer.Unary_LP_RP_TO_Unary:
@@ -126,7 +128,9 @@ public class UnaryNodeExecutor extends BaseExecutor{
         	if (production == CGrammarInitializer.Unary_LP_ARGS_RP_TO_Unary) {
         		ICodeNode argsNode = root.getChildren().get(1);
         		ArrayList<Object> argList = (ArrayList<Object>)argsNode.getAttribute(ICodeKey.VALUE);
+        		ArrayList<Object> symList = (ArrayList<Object>)argsNode.getAttribute(ICodeKey.SYMBOL);
             	FunctionArgumentList.getFunctionArgumentList().setFuncArgList(argList);	
+            	FunctionArgumentList.getFunctionArgumentList().setFuncArgSymbolList(symList);
         	}
         	
         	//找到函数执行树头节点
@@ -147,6 +151,29 @@ public class UnaryNodeExecutor extends BaseExecutor{
     			} 
         	}
 			
+        	break;
+        	
+        case CGrammarInitializer.Unary_StructOP_Name_TO_Unary:
+        	child = root.getChildren().get(0);
+        	String fieldName = (String)root.getAttribute(ICodeKey.TEXT);
+    		symbol = (Symbol)child.getAttribute(ICodeKey.SYMBOL);
+    		
+    		Symbol args = symbol.getArgList();
+    		while (args != null) {
+    			if (args.getName().equals(fieldName)) {
+    				break;
+    			}
+    			
+    			args = args.getNextSymbol();
+    		}
+    		
+    		if (args == null) {
+    			System.err.println("access a filed not in struct object!");
+    			System.exit(1);
+    		}
+    		
+    		root.setAttribute(ICodeKey.SYMBOL, args);
+    		root.setAttribute(ICodeKey.VALUE, args.getValue());
         	break;
         	
     	}

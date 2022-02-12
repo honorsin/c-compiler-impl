@@ -121,6 +121,8 @@ public class CGrammarInitializer {
 	public static final int Binary_Minus_Binary_TO_Binary = 95;
 	//UNARY -> STAR UNARY 99
 	public static final int Start_Unary_TO_Unary = 99;
+	//UNARY -> UNARY STRUCTOP NAME 100
+	public static final int Unary_StructOP_Name_TO_Unary = 100;
 	
 	private int productionNum = 0;
 	
@@ -960,7 +962,7 @@ public class CGrammarInitializer {
     	
     	//UNARY -> UNARY STRUCTOP NAME  a = tag->name (100)
     	right = getProductionRight( new int[]{CTokenType.UNARY.ordinal(), CTokenType.STRUCTOP.ordinal(),
-    			CTokenType.UNARY.ordinal()});
+    			CTokenType.NAME.ordinal()});
     	production = new Production(productionNum,CTokenType.UNARY.ordinal(),0, right);
     	productionNum++;
     	addProduction(production, false);
@@ -1061,6 +1063,8 @@ public class CGrammarInitializer {
     	production = new Production(productionNum,CTokenType.UNARY.ordinal(),0, right);
     	productionNum++;
     	addProduction(production, false);
+    	
+    	
     }
     
     private void addProduction(Production production,boolean nullable) {

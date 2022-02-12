@@ -43,6 +43,7 @@ public class CodeTreeBuilder {
     public ICodeNode buildCodeTree(int production, String text) {
     	ICodeNode node = null;
     	Symbol symbol = null;
+    	ICodeNode child = null;
     	
     	switch (production) {
     	case CGrammarInitializer.Number_TO_Unary:
@@ -85,7 +86,7 @@ public class CodeTreeBuilder {
     		
     	case CGrammarInitializer.Uanry_TO_Binary:
     		node = ICodeFactory.createICodeNode(CTokenType.BINARY);
-    		ICodeNode child = codeNodeStack.pop();
+    		child = codeNodeStack.pop();
     		node.setAttribute(ICodeKey.TEXT, child.getAttribute(ICodeKey.TEXT));		
     		node.addChild(child);
     		break;
@@ -245,6 +246,12 @@ public class CodeTreeBuilder {
     	case CGrammarInitializer.Return_Expr_Semi_TO_Statement:
     		node = ICodeFactory.createICodeNode(CTokenType.STATEMENT);
     		node.addChild(codeNodeStack.pop());
+    		break;
+    		
+    	case CGrammarInitializer.Unary_StructOP_Name_TO_Unary:
+    		node = ICodeFactory.createICodeNode(CTokenType.UNARY);
+    	    node.addChild(codeNodeStack.pop());
+    		node.setAttribute(ICodeKey.TEXT, text);
     		break;
     		
     	}

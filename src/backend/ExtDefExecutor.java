@@ -51,13 +51,13 @@ public class ExtDefExecutor extends BaseExecutor {
 			count++;
 			}
 	}
-
+	
     private void restoreArgs() {
     	System.out.println("Restore arguments....");
     	TypeSystem typeSystem = TypeSystem.getTypeSystem();
-		  ArrayList<Symbol> args = typeSystem.getSymbolsByScope(funcName);
-		  int count = 0;
-
+		ArrayList<Symbol> args = typeSystem.getSymbolsByScope(funcName);
+		int count = 0;
+    	
     	while (args != null && count < argsList.size()) {
     		IValueSetter setter = (IValueSetter)args.get(count);
     		try {
